@@ -19,6 +19,7 @@ class Vertex{
         int get_x();
         int get_y();
         std::vector<Vertex*> get_neighbours();
+        Vertex* get_parent();
 
     private:
         Point location;
@@ -27,13 +28,17 @@ class Vertex{
         std::vector<Vertex*> neighbours;
 };
 std::vector<std::vector<Vertex>> image_to_grid(sf::Image image, int canvasWidth, int canvasHeight);
-sf::Image run_algorithm(
+std::vector<Vertex*> get_path(Vertex* end_vertex, Point start);
+std::vector<Vertex*> run_algorithm(
     Point start,
     Point end,
     sf::Image& canvas,
-    std::vector<std::vector<Vertex>> vertex_grid,
+    std::vector<std::vector<Vertex>>& vertex_grid,
     sf::Texture& texture,
     sf::RenderWindow& window,
     sf::Sprite& sprite,
-    unsigned algorithm_delay
+    unsigned algorithm_delay,
+    sf::Text text
     );
+
+

@@ -42,6 +42,10 @@ std::vector<Vertex*> Vertex::get_neighbours(){
     return this->neighbours;
 }
 
+Vertex* Vertex::get_parent(){
+    return this->parent;
+}
+
 
 std::vector<std::vector<Vertex>> image_to_grid(sf::Image image, int canvasWidth, int canvasHeight){
     
@@ -80,15 +84,16 @@ std::vector<std::vector<Vertex>> image_to_grid(sf::Image image, int canvasWidth,
     return pixel_vertex_matrix;
 }   
 
-sf::Image run_algorithm(
+std::vector<Vertex*> run_algorithm(
     Point start,
      Point end,
      sf::Image& canvas,
-     std::vector<std::vector<Vertex>> vertex_grid,
+     std::vector<std::vector<Vertex>>& vertex_grid,
      sf::Texture& texture,
      sf::RenderWindow& window,
      sf::Sprite& sprite,
-     unsigned algorithm_delay
+     unsigned algorithm_delay,
+     sf::Text text
     ){
     Vertex* start_vertex = &vertex_grid[start.y][start.x];
     std::vector<Vertex*> start_neighbours = start_vertex->get_neighbours();
@@ -105,13 +110,14 @@ sf::Image run_algorithm(
             window.clear();
             window.draw(sprite);
             window.display();
-            return canvas;
+            return get_path(v, start);
         }
         std::vector<Vertex*> neighbours = v->get_neighbours();
         for(int i =0; i<neighbours.size();i++){
             auto it = visited.find(neighbours[i]);
             if(it == visited.end() && neighbours[i]->get_color() != sf::Color::Black){
                 q.push_back(neighbours[i]);
+                neighbours[i]->set_parent(v);
                 visited.insert(neighbours[i]);
             }
         }
@@ -120,6 +126,7 @@ sf::Image run_algorithm(
             texture.update(canvas);
             window.clear();
             window.draw(sprite);
+            window.draw(text);
             window.display();
             sf::sleep(sf::milliseconds(algorithm_delay));
         }
@@ -131,6 +138,20 @@ sf::Image run_algorithm(
     window.clear();
     window.draw(sprite);
     window.display();
-    return canvas;
+    std::vector<Vertex*> no_end_found = {};
+    return no_end_found;
+}
 
+std::vector<Vertex*> get_path(Vertex* end_vertex, Point start){
+    std::vector<Vertex*> path_list = {};
+    bool end_found = false;
+    path_list.push_back(end_vertex);
+    while(!end_found){
+        Vertex* current_vector = path_list.front();
+        path_list.insert(path_list.begin(), current_vector->get_parent());
+        if(current_vector->get_x() == start.x && current_vector->get_y() == start.y){
+            end_found = true;
+        }
+    }
+    return path_list;
 }

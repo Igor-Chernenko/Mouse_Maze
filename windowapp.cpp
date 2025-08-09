@@ -15,6 +15,7 @@ WindowApp::WindowApp(){
     const int canvasWidth = 100;
     const int canvasHeight = 75;
     const unsigned algorithm_delay = 5; //ms
+    const float margin = 5.f;
 
     int state = 0;
     Point start =  {};
@@ -28,6 +29,23 @@ WindowApp::WindowApp(){
 
     sf::RenderWindow window(sf::VideoMode(canvasWidth* scale, canvasHeight* scale), "Maze Finder");
     
+    //create and store font
+    sf::Font font;
+    if (!font.loadFromFile("ArialMdm.ttf")) {
+        throw std::runtime_error("Could not load font");
+    }
+    sf::Text text;
+    text.setFont(font);
+    text.setString("Left Click to Draw Maze --or-- Right Click to Set Starting Point");
+    text.setCharacterSize(20);        // pixels
+    text.setFillColor(sf::Color::Black);
+    sf::FloatRect bounds = text.getLocalBounds();
+    text.setPosition(
+        margin, 
+        window.getSize().y - bounds.height - bounds.top - margin
+    );
+    
+
     //create an image that stores pixels of canvas in RAM
     canvas.create(100, 75, sf::Color::White);
 
@@ -40,7 +58,7 @@ WindowApp::WindowApp(){
 
     sprite.setScale(scale, scale);
     //zoom in to ensure pixels are visual
-
+    window.draw(text);
 
     while (window.isOpen()){
         sf::Event event;
@@ -64,6 +82,7 @@ WindowApp::WindowApp(){
                 case sf::Event::MouseButtonPressed:
                     if(event.mouseButton.button == sf::Mouse::Right){
                         if(state == 0){
+                            text.setString("Start Point set! -- Left Click to Draw Maze --or-- Right Click to Set End Point(Place Cheese)");
                             //set start
                             int x = event.mouseButton.x/scale;
                             int y = event.mouseButton.y/scale;
@@ -76,22 +95,39 @@ WindowApp::WindowApp(){
                             //set end
                             int x = event.mouseButton.x/scale;
                             int y = event.mouseButton.y/scale;
-
+                            text.setString("End Point set! -- Left Click to Draw Maze --or-- Right Click to Free the Mouse");
                             canvas.setPixel(x, y, sf::Color::Red);
                             texture.update(canvas);
                             end = {x, y};
                             state++;
                         
                         } else if (state == 2){
+                            text.setString("Sniffing out the Cheese!");
+                            window.clear();
+                            window.draw(sprite);
+                            window.draw(text);
+                            window.display();
+                            sf::Image canvas_save= canvas;
                             std::vector<std::vector<Vertex>> grid = image_to_grid(canvas, canvasWidth, canvasHeight);
+                             std::vector<Vertex*> shortest_path = {};
                             try{
-                                canvas = run_algorithm(start, end, canvas, grid, texture, window, sprite, algorithm_delay);
+                                 shortest_path = run_algorithm(start, end, canvas, grid, texture, window, sprite, algorithm_delay, text);
                             }catch (std::exception& e){
                                 std::cout<< "error occured: "<<e.what()<<std::endl;
                                 continue;
+                            };
+                            window.clear();
+                            canvas = canvas_save;
+                            texture.update(canvas);
+                            window.draw(sprite);
+                            window.draw(text);
+                            window.display();
+
+                            for(int i=0; i<shortest_path.size(); i++){
+                                Vertex* current_vertex = shortest_path[i];
+                                canvas.setPixel(current_vertex->get_x(), current_vertex->get_y(), sf::Color::Green);
                             }
                             texture.update(canvas);
-
                             state+=1;
 
                         } else if (state == 3){
@@ -99,6 +135,7 @@ WindowApp::WindowApp(){
                             canvas.setPixel(start.x, start.y, sf::Color::White);
                             canvas.setPixel(end.x, end.y, sf::Color::White);
                             texture.update(canvas);
+                            text.setString("Left Click to Draw Maze --or-- Right Click to Set Starting Point");
                             state = 0;
 
                         }
@@ -107,6 +144,7 @@ WindowApp::WindowApp(){
             }
             window.clear();
             window.draw(sprite);
+            window.draw(text);
             window.display();
         }
     }
