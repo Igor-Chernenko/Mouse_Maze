@@ -14,6 +14,7 @@ WindowApp::WindowApp(){
     const int scale = 8;
     const int canvasWidth = 100;
     const int canvasHeight = 75;
+    const unsigned algorithm_delay = 5; //ms
 
     int state = 0;
     Point start =  {};
@@ -84,7 +85,7 @@ WindowApp::WindowApp(){
                         } else if (state == 2){
                             std::vector<std::vector<Vertex>> grid = image_to_grid(canvas, canvasWidth, canvasHeight);
                             try{
-                                canvas = run_algorithm(start, end, canvas, grid, texture);
+                                canvas = run_algorithm(start, end, canvas, grid, texture, window, sprite, algorithm_delay);
                             }catch (std::exception& e){
                                 std::cout<< "error occured: "<<e.what()<<std::endl;
                                 continue;

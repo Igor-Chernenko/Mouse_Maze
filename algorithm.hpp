@@ -27,5 +27,13 @@ class Vertex{
         std::vector<Vertex*> neighbours;
 };
 std::vector<std::vector<Vertex>> image_to_grid(sf::Image image, int canvasWidth, int canvasHeight);
-sf::Image run_algorithm(Point start, Point end, sf::Image canvas, std::vector<std::vector<Vertex>> vertex_grid, sf::Texture texture);
-
+sf::Image run_algorithm(
+    Point start,
+    Point end,
+    sf::Image& canvas,
+    std::vector<std::vector<Vertex>> vertex_grid,
+    sf::Texture& texture,
+    sf::RenderWindow& window,
+    sf::Sprite& sprite,
+    unsigned algorithm_delay
+    );

@@ -80,7 +80,16 @@ std::vector<std::vector<Vertex>> image_to_grid(sf::Image image, int canvasWidth,
     return pixel_vertex_matrix;
 }   
 
-sf::Image run_algorithm(Point start, Point end, sf::Image canvas, std::vector<std::vector<Vertex>> vertex_grid, sf::Texture texture){
+sf::Image run_algorithm(
+    Point start,
+     Point end,
+     sf::Image& canvas,
+     std::vector<std::vector<Vertex>> vertex_grid,
+     sf::Texture& texture,
+     sf::RenderWindow& window,
+     sf::Sprite& sprite,
+     unsigned algorithm_delay
+    ){
     Vertex* start_vertex = &vertex_grid[start.y][start.x];
     std::vector<Vertex*> start_neighbours = start_vertex->get_neighbours();
     if(start_neighbours.size() <= 0){
@@ -92,6 +101,10 @@ sf::Image run_algorithm(Point start, Point end, sf::Image canvas, std::vector<st
     while(q.size() > 0){
         Vertex* v = q.front();
         if(v->get_x() == end.x && v->get_y() == end.y){
+            texture.update(canvas);
+            window.clear();
+            window.draw(sprite);
+            window.display();
             return canvas;
         }
         std::vector<Vertex*> neighbours = v->get_neighbours();
@@ -105,12 +118,19 @@ sf::Image run_algorithm(Point start, Point end, sf::Image canvas, std::vector<st
         if(!(v->get_x() == start.x && v->get_y() == start.y)){
             canvas.setPixel(v->get_x(), v->get_y(), sf::Color::Yellow);
             texture.update(canvas);
-            sf::sleep(sf::milliseconds(100));
+            window.clear();
+            window.draw(sprite);
+            window.display();
+            sf::sleep(sf::milliseconds(algorithm_delay));
         }
 
         q.pop_front();    
 
     }
+    texture.update(canvas);
+    window.clear();
+    window.draw(sprite);
+    window.display();
     return canvas;
 
 }
