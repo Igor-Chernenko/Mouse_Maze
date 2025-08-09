@@ -1,0 +1,3 @@
+/home/igorchernenko/Desktop/c++_code/maze_finder/build/CMakeFiles/maze_finder.dir
+/home/igorchernenko/Desktop/c++_code/maze_finder/build/CMakeFiles/edit_cache.dir
+/home/igorchernenko/Desktop/c++_code/maze_finder/build/CMakeFiles/rebuild_cache.dir
