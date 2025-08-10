@@ -120,9 +120,14 @@ WindowApp::WindowApp(){
                             canvas = canvas_save;
                             texture.update(canvas);
                             window.draw(sprite);
+                            text.setString("Sniffing out the Cheese!");
                             window.draw(text);
                             window.display();
-
+                            if(shortest_path.size()>0){
+                                text.setString("found the cheese!");
+                            }else{
+                                text.setString("could not find the cheese");
+                            }
                             for(int i=0; i<shortest_path.size(); i++){
                                 Vertex* current_vertex = shortest_path[i];
                                 canvas.setPixel(current_vertex->get_x(), current_vertex->get_y(), sf::Color::Green);

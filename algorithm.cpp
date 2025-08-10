@@ -66,19 +66,52 @@ std::vector<std::vector<Vertex>> image_to_grid(sf::Image image, int canvasWidth,
     for(int y = 0; y< pixel_vertex_matrix.size(); y++){
         for(int x = 0; x< pixel_vertex_matrix[y].size(); x++){
             Vertex* current_vertex = &pixel_vertex_matrix[y][x];
-            //check neighbours
+            //check neighbours---------------
+            //check left
             if(x != 0 && pixel_vertex_matrix[y][x-1].get_color() != sf::Color::Black){
                 (*current_vertex).add_neighbour(&pixel_vertex_matrix[y][x-1]);
             }
+            //check right
             if(x < canvasWidth-1 && pixel_vertex_matrix[y][x+1].get_color() != sf::Color::Black){
                 current_vertex->add_neighbour(&pixel_vertex_matrix[y][x+1]);
             }
+            //check bottom
             if(y < canvasHeight-1 && pixel_vertex_matrix[y+1][x].get_color() != sf::Color::Black){
                 current_vertex->add_neighbour(&pixel_vertex_matrix[y+1][x]);
             }
+            //check top
             if(y !=0 && pixel_vertex_matrix[y-1][x].get_color() != sf::Color::Black){
                 current_vertex->add_neighbour(&pixel_vertex_matrix[y-1][x]);
             };
+            //check bottom right
+            if(x < canvasWidth-1 && y< canvasHeight-1 && 
+                pixel_vertex_matrix[y+1][x].get_color() != sf::Color::Black &&
+                pixel_vertex_matrix[y][x+1].get_color() != sf::Color::Black
+            ){
+                current_vertex->add_neighbour(&pixel_vertex_matrix[y+1][x+1]);
+            }
+            //check top right
+            if(x < canvasWidth-1 && y>0 &&
+                 pixel_vertex_matrix[y-1][x].get_color() != sf::Color::Black&&
+                 pixel_vertex_matrix[y][x+1].get_color() != sf::Color::Black
+                ){
+                current_vertex->add_neighbour(&pixel_vertex_matrix[y-1][x+1]);
+            }
+            //check top left
+            if(y !=0 && x!=0 && 
+                pixel_vertex_matrix[y-1][x].get_color() != sf::Color::Black&&
+                pixel_vertex_matrix[y][x-1].get_color() != sf::Color::Black
+            ){
+                current_vertex->add_neighbour(&pixel_vertex_matrix[y-1][x-1]);
+            };
+            //check bottom left
+            if(y < canvasHeight-1 && x>=1 && 
+                pixel_vertex_matrix[y+1][x].get_color() != sf::Color::Black&&
+                pixel_vertex_matrix[y][x-1].get_color() != sf::Color::Black
+            ){
+                current_vertex->add_neighbour(&pixel_vertex_matrix[y+1][x-1]);
+            };
+        
         }
     }
     return pixel_vertex_matrix;
